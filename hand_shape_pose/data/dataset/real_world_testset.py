@@ -16,6 +16,10 @@ import numpy as np
 import torch
 import torch.utils.data
 
+import pandas as pd  
+
+
+
 
 class RealWorldTestSet(torch.utils.data.Dataset):
     def __init__(self, root, param_file, ann_file):
@@ -27,7 +31,13 @@ class RealWorldTestSet(torch.utils.data.Dataset):
         self.cam_params = torch.from_numpy(mat_params["cam_param"]).float()  # N x 4, [fx, fy, u0, v0]
         assert len(self.image_paths) == self.cam_params.shape[0]
 
-        self.bboxes = torch.from_numpy(mat_params["bbox"]).float()  # N x 4, bounding box in the original image, [x, y, w, h]
+        
+        #self.bboxes = torch.from_numpy(mat_params["bbox"]).float()  # N x 4, bounding box in the original image, [x, y, w, h]
+        
+        #wb=openpyxl.load_workbook('data/real_world_testset/bbox.xlsx')
+        df0=pd.read_csv('data/real_world_testset/bbox.csv',index_col=0)
+        df0=np.array(df0)
+        self.bboxes = torch.from_numpy(df0).float()
         assert len(self.image_paths) == self.bboxes.shape[0]
 
         self.pose_roots = torch.from_numpy(mat_params["pose_root"]).float()  # N x 3, [root_x, root_y, root_z]
