@@ -16,9 +16,7 @@ import numpy as np
 import torch
 import torch.utils.data
 
-import pandas as pd  
-
-
+import pandas as pd
 
 
 class RealWorldTestSet(torch.utils.data.Dataset):
@@ -28,29 +26,46 @@ class RealWorldTestSet(torch.utils.data.Dataset):
         mat_params = sio.loadmat(param_file)
         self.image_paths = mat_params["image_path"]
 
-        self.cam_params = torch.from_numpy(mat_params["cam_param"]).float()  # N x 4, [fx, fy, u0, v0]
+        # self.cam_params = torch.from_numpy(mat_params["cam_param"]).float()  # N x 4, [fx, fy, u0, v0]
+        cam_param = pd.read_csv(
+            'data/real_world_testset/cam_param.csv', index_col=0)
+        cam_param = np.array(cam_param)
+        self.cam_params = torch.from_numpy(cam_param).float()
         assert len(self.image_paths) == self.cam_params.shape[0]
 
-        
-        #self.bboxes = torch.from_numpy(mat_params["bbox"]).float()  # N x 4, bounding box in the original image, [x, y, w, h]
-        
-        #wb=openpyxl.load_workbook('data/real_world_testset/bbox.xlsx')
-        df0=pd.read_csv('data/real_world_testset/bbox.csv',index_col=0)
-        df0=np.array(df0)
-        self.bboxes = torch.from_numpy(df0).float()
+        # self.bboxes = torch.from_numpy(mat_params["bbox"]).float()  # N x 4, bounding box in the original image, [x, y, w, h]
+        bbox = pd.read_csv('data/real_world_testset/bbox.csv', index_col=0)
+        bbox = np.array(bbox)
+        self.bboxes = torch.from_numpy(bbox).float()
         assert len(self.image_paths) == self.bboxes.shape[0]
 
-        self.pose_roots = torch.from_numpy(mat_params["pose_root"]).float()  # N x 3, [root_x, root_y, root_z]
+        # self.pose_roots = torch.from_numpy(mat_params["pose_root"]).float()  # N x 3, [root_x, root_y, root_z]
+        pose_root = pd.read_csv(
+            'data/real_world_testset/cam_param.csv', index_col=0)
+        pose_root = np.array(pose_root)
+        self.pose_roots = torch.from_numpy(pose_root).float()
         assert len(self.image_paths) == self.pose_roots.shape[0]
 
         if "pose_scale" in mat_params.keys():
-            self.pose_scales = torch.from_numpy(mat_params["pose_scale"]).squeeze().float()  # N, length of first bone of middle finger
+            # self.pose_scales = torch.from_numpy(mat_params["pose_scale"]).squeeze().float()  # N, length of first bone of middle finger
+            pose_scale = pd.read_csv(
+                'data/real_world_testset/pose_scale.csv', index_col=0)
+        pose_scale = np.array(pose_scale)
+        self.pose_scales = torch.from_numpy(pose_scale).float()
         else:
-            self.pose_scales = torch.ones(len(self.image_paths)) * 5.0
+            #self.pose_scales = torch.ones(len(self.image_paths)) * 5.0
+            pose_scale = pd.read_csv(
+                'data/real_world_testset/pose_scale.csv', index_col=0)
+            pose_scale = np.array(pose_scale)
+            self.pose_scales = torch.from_numpy(pose_scale).float()
         assert len(self.image_paths) == self.pose_scales.shape[0]
 
         mat_gt = sio.loadmat(ann_file)
-        self.pose_gts = torch.from_numpy(mat_gt["pose_gt"])  # N x K x 3
+        # self.pose_gts = torch.from_numpy(mat_gt["pose_gt"])  # N x K x 3
+        pose_gt = pd.read_csv(
+            'data/real_world_testset/pose_gt.csv', index_col=0)
+        pose_gt = np.array(pose_gt)
+        self.pose_gts = torch.from_numpy(pose_gt).float()
         assert len(self.image_paths) == self.pose_gts.shape[0]
 
     def __getitem__(self, index):
@@ -58,7 +73,7 @@ class RealWorldTestSet(torch.utils.data.Dataset):
         img = torch.from_numpy(img)  # 256 x 256 x 3
 
         return img, self.cam_params[index], self.bboxes[index], \
-               self.pose_roots[index], self.pose_scales[index], index
+            self.pose_roots[index], self.pose_scales[index], index
 
     def __len__(self):
         return len(self.image_paths)
@@ -76,10 +91,15 @@ class RealWorldTestSet(torch.utils.data.Dataset):
             image_ids = results_pose_cam_xyz.keys()
             image_ids.sort()
             eval_results["image_ids"] = np.array(image_ids)
-            eval_results["gt_pose_xyz"] = [self.pose_gts[image_id].unsqueeze(0) for image_id in image_ids]
-            eval_results["est_pose_xyz"] = [results_pose_cam_xyz[image_id].unsqueeze(0) for image_id in image_ids]
-            eval_results["gt_pose_xyz"] = torch.cat(eval_results["gt_pose_xyz"], 0).numpy()
-            eval_results["est_pose_xyz"] = torch.cat(eval_results["est_pose_xyz"], 0).numpy()
-            sio.savemat(osp.join(output_dir, "pose_estimations.mat"), eval_results)
+            eval_results["gt_pose_xyz"] = [
+                self.pose_gts[image_id].unsqueeze(0) for image_id in image_ids]
+            eval_results["est_pose_xyz"] = [
+                results_pose_cam_xyz[image_id].unsqueeze(0) for image_id in image_ids]
+            eval_results["gt_pose_xyz"] = torch.cat(
+                eval_results["gt_pose_xyz"], 0).numpy()
+            eval_results["est_pose_xyz"] = torch.cat(
+                eval_results["est_pose_xyz"], 0).numpy()
+            sio.savemat(
+                osp.join(output_dir, "pose_estimations.mat"), eval_results)
 
         return avg_est_error.item()

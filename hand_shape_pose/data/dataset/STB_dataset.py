@@ -45,7 +45,8 @@ def SK_rot_mx(rot_vec):
     c = -vector[1]
     d = -vector[2]
     return np.array([[a * a + b * b - c * c - d * d, 2 * (b * c + a * d), 2 * (b * d - a * c)],
-                     [2 * (b * c - a * d), a * a + c * c - b * b - d * d, 2 * (c * d + a * b)],
+                     [2 * (b * c - a * d), a * a + c * c -
+                      b * b - d * d, 2 * (c * d + a * b)],
                      [2 * (b * d + a * c), 2 * (c * d - a * b), a * a + d * d - b * b - c * c]])
 
 
@@ -81,24 +82,30 @@ class STBDataset(torch.utils.data.Dataset):
         self.pose_roots = []
         self.pose_scales = []
         self.pose_gts = []
-        self.cam_params = torch.tensor([SK_fx_color, SK_fy_color, SK_tx_color, SK_ty_color])
+        self.cam_params = torch.tensor(
+            [SK_fx_color, SK_fy_color, SK_tx_color, SK_ty_color])
 
         root_id = snap_joint_name2id['loc_bn_palm_L']
 
         for image_dir, ann_file in zip(image_dir_list, ann_file_list):
             mat_gt = sio.loadmat(ann_file)
-            curr_pose_gts = mat_gt["handPara"].transpose((2, 1, 0))  # N x K x 3
-            curr_pose_gts = self.SK_xyz_depth2color(curr_pose_gts, SK_trans_vec, SK_rot)
-            curr_pose_gts = curr_pose_gts[:, STB_to_Snap_id, :] / 10.0  # convert to Snap index, mm->cm
+            curr_pose_gts = mat_gt["handPara"].transpose(
+                (2, 1, 0))  # N x K x 3
+            curr_pose_gts = self.SK_xyz_depth2color(
+                curr_pose_gts, SK_trans_vec, SK_rot)
+            # convert to Snap index, mm->cm
+            curr_pose_gts = curr_pose_gts[:, STB_to_Snap_id, :] / 10.0
             curr_pose_gts = self.palm2wrist(curr_pose_gts)  # N x K x 3
             curr_pose_gts = torch.from_numpy(curr_pose_gts)
             self.pose_gts.append(curr_pose_gts)
 
             self.pose_roots.append(curr_pose_gts[:, root_id, :])  # N x 3
-            self.pose_scales.append(self.compute_hand_scale(curr_pose_gts))  # N
+            self.pose_scales.append(
+                self.compute_hand_scale(curr_pose_gts))  # N
 
             for image_id in range(curr_pose_gts.shape[0]):
-                self.image_paths.append(osp.join(image_dir, "%s_%d.png" % (image_prefix, image_id)))
+                self.image_paths.append(
+                    osp.join(image_dir, "%s_%d.png" % (image_prefix, image_id)))
 
         self.pose_roots = torch.cat(self.pose_roots, 0).float()
         self.pose_scales = torch.cat(self.pose_scales, 0).float()
@@ -110,13 +117,14 @@ class STBDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         img = cv2.imread(self.image_paths[index])
         '''crop image'''
-        crop_img = crop_pad_im_from_bounding_rect(img, self.bboxes[index, :].int())
+        crop_img = crop_pad_im_from_bounding_rect(
+            img, self.bboxes[index, :].int())
         '''resize image'''
         crop_resized_img = cv2.resize(crop_img, (resize_dim[1], resize_dim[0]))
         crop_resized_img = torch.from_numpy(crop_resized_img)  # 256 x 256 x 3
 
         return crop_resized_img, self.cam_params, self.bboxes[index], \
-               self.pose_roots[index], self.pose_scales[index], index
+            self.pose_roots[index], self.pose_scales[index], index
 
     def __len__(self):
         return len(self.image_paths)
@@ -126,21 +134,24 @@ class STBDataset(torch.utils.data.Dataset):
         :param depth_xyz: N x 21 x 3, trans_vec: 3, rot_mx: 3 x 3
         :return: color_xyz: N x 21 x 3
         """
-        color_xyz = depth_xyz - np.tile(trans_vec, [depth_xyz.shape[0], depth_xyz.shape[1], 1])
+        color_xyz = depth_xyz - \
+            np.tile(trans_vec, [depth_xyz.shape[0], depth_xyz.shape[1], 1])
         return color_xyz.dot(rot_mx)
 
     def palm2wrist(self, pose_xyz):
         root_id = snap_joint_name2id['loc_bn_palm_L']
         ring_root_id = snap_joint_name2id['loc_bn_ring_L_01']
         pose_xyz[:, root_id, :] = pose_xyz[:, ring_root_id, :] + \
-                                  2.0 * (pose_xyz[:, root_id, :] - pose_xyz[:, ring_root_id, :])  # N x K x 3
+            2.0 * (pose_xyz[:, root_id, :] -
+                   pose_xyz[:, ring_root_id, :])  # N x K x 3
         return pose_xyz
 
     def compute_hand_scale(self, pose_xyz):
         ref_bone_joint_1_id = snap_joint_name2id['loc_bn_mid_L_02']
         ref_bone_joint_2_id = snap_joint_name2id['loc_bn_mid_L_01']
 
-        pose_scale_vec = pose_xyz[:, ref_bone_joint_1_id, :] - pose_xyz[:, ref_bone_joint_2_id, :]  # N x 3
+        pose_scale_vec = pose_xyz[:, ref_bone_joint_1_id,
+                                  :] - pose_xyz[:, ref_bone_joint_2_id, :]  # N x 3
         pose_scale = torch.norm(pose_scale_vec, dim=1)  # N
         return pose_scale
 
@@ -157,10 +168,22 @@ class STBDataset(torch.utils.data.Dataset):
             image_ids = results_pose_cam_xyz.keys()
             image_ids.sort()
             eval_results["image_ids"] = np.array(image_ids)
-            eval_results["gt_pose_xyz"] = [self.pose_gts[image_id].unsqueeze(0) for image_id in image_ids]
-            eval_results["est_pose_xyz"] = [results_pose_cam_xyz[image_id].unsqueeze(0) for image_id in image_ids]
-            eval_results["gt_pose_xyz"] = torch.cat(eval_results["gt_pose_xyz"], 0).numpy()
-            eval_results["est_pose_xyz"] = torch.cat(eval_results["est_pose_xyz"], 0).numpy()
-            sio.savemat(osp.join(output_dir, "pose_estimations.mat"), eval_results)
+            eval_results["gt_pose_xyz"] = [
+                self.pose_gts[image_id].unsqueeze(0) for image_id in image_ids]
+            eval_results["est_pose_xyz"] = [
+                results_pose_cam_xyz[image_id].unsqueeze(0) for image_id in image_ids]
+            eval_results["gt_pose_xyz"] = torch.cat(
+                eval_results["gt_pose_xyz"], 0).numpy()
+            eval_results["est_pose_xyz"] = torch.cat(
+                eval_results["est_pose_xyz"], 0).numpy()
+            sio.savemat(
+                osp.join(output_dir, "pose_estimations.mat"), eval_results)
 
         return avg_est_error.item()
+
+
+# CTOやめさせていただきたいと思います。
+理由はもうぼくにモチベがなくなってしまいました。
+
+おそらくは社長は僕がさっさと作って欲しかったのですね。
+しかし、僕はそれではダメだと思うのです。どんなに早く好き勝手にエンジニアが作ってもそれはおナニーでしかなく、本来はビジネスと密接に交わって試行錯誤の上で作り出すべきものだと思っているからです。
