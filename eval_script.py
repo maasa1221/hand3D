@@ -21,8 +21,11 @@ from hand_shape_pose.util.miscellaneous import mkdir
 from hand_shape_pose.util.vis import save_batch_image_with_mesh_joints
 from hand_shape_pose.util import renderer
 
+import cv2
+import os
 
 def main():
+    image_capture()
     parser = argparse.ArgumentParser(description="3D Hand Shape and Pose Inference")
     parser.add_argument(
         "--config-file",
@@ -105,6 +108,29 @@ def main():
 
     avg_est_error = dataset_val.evaluate_pose(results_pose_cam_xyz, cfg.EVAL.SAVE_POSE_ESTIMATION, output_dir)  # cm
     logger.info("Overall:\tAverage pose estimation error: {0:.2f} (mm)".format(avg_est_error * 10.0))
+
+
+
+
+
+def image_capture():
+    cap = cv2.VideoCapture(0)
+    for i in range(100):
+        ret, frame = cap.read()
+        cv2.rectangle(frame,(0,0),(780-258,746-224),(255,255,255),3)
+        if frame is None:
+            break
+        cv2.imshow("Show FLAME Image", frame) 
+        frame = frame[0:770-258, 0:736-224]
+        frame = cv2.resize(frame, (int(frame.shape[1]/2), int(frame.shape[0]/2)))
+        count=i
+        cv2.imwrite("./data/real_world_testset/images/"+"0"*(5-len(str(count)))+str(count)+".jpg", frame)
+        k = cv2.waitKey(1)
+        if k == ord('q'):
+            break
+    cap.release()
+    cv2.destroyAllWindows()
+
 
 
 if __name__ == "__main__":

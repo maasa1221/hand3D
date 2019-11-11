@@ -27,8 +27,7 @@ class RealWorldTestSet(torch.utils.data.Dataset):
         self.image_paths = mat_params["image_path"]
 
         # self.cam_params = torch.from_numpy(mat_params["cam_param"]).float()  # N x 4, [fx, fy, u0, v0]
-        cam_param = pd.read_csv(
-            'data/real_world_testset/cam_param.csv', index_col=0)
+        cam_param = pd.read_csv('data/real_world_testset/cam_param.csv', index_col=0)
         cam_param = np.array(cam_param)
         self.cam_params = torch.from_numpy(cam_param).float()
         assert len(self.image_paths) == self.cam_params.shape[0]
@@ -40,32 +39,30 @@ class RealWorldTestSet(torch.utils.data.Dataset):
         assert len(self.image_paths) == self.bboxes.shape[0]
 
         # self.pose_roots = torch.from_numpy(mat_params["pose_root"]).float()  # N x 3, [root_x, root_y, root_z]
-        pose_root = pd.read_csv(
-            'data/real_world_testset/cam_param.csv', index_col=0)
+        pose_root = pd.read_csv('data/real_world_testset/pose_root.csv', index_col=0)
         pose_root = np.array(pose_root)
         self.pose_roots = torch.from_numpy(pose_root).float()
         assert len(self.image_paths) == self.pose_roots.shape[0]
 
         if "pose_scale" in mat_params.keys():
             # self.pose_scales = torch.from_numpy(mat_params["pose_scale"]).squeeze().float()  # N, length of first bone of middle finger
-            pose_scale = pd.read_csv(
-                'data/real_world_testset/pose_scale.csv', index_col=0)
-        pose_scale = np.array(pose_scale)
-        self.pose_scales = torch.from_numpy(pose_scale).float()
-        else:
-            #self.pose_scales = torch.ones(len(self.image_paths)) * 5.0
-            pose_scale = pd.read_csv(
-                'data/real_world_testset/pose_scale.csv', index_col=0)
+            pose_scale = pd.read_csv('data/real_world_testset/pose_scale.csv', index_col=0)
             pose_scale = np.array(pose_scale)
-            self.pose_scales = torch.from_numpy(pose_scale).float()
+            self.pose_scales = torch.from_numpy(pose_scale).squeeze().float()
+        else:
+            self.pose_scales = torch.ones(len(self.image_paths)) * 5.0
         assert len(self.image_paths) == self.pose_scales.shape[0]
 
-        mat_gt = sio.loadmat(ann_file)
+        #mat_gt = sio.loadmat(ann_file)
         # self.pose_gts = torch.from_numpy(mat_gt["pose_gt"])  # N x K x 3
-        pose_gt = pd.read_csv(
-            'data/real_world_testset/pose_gt.csv', index_col=0)
-        pose_gt = np.array(pose_gt)
-        self.pose_gts = torch.from_numpy(pose_gt).float()
+        #pose_gt = pd.read_csv('data/real_world_testset/pose_gt.csv', index_col=0)
+        #pose_gt = np.array(pose_gt)
+        #self.pose_gts = torch.from_numpy(pose_gt).float()
+        #assert len(self.image_paths) == self.pose_gts.shape[0]
+
+
+        mat_gt = sio.loadmat(ann_file)
+        self.pose_gts = torch.from_numpy(mat_gt["pose_gt"])  # N x K x 3
         assert len(self.image_paths) == self.pose_gts.shape[0]
 
     def __getitem__(self, index):
