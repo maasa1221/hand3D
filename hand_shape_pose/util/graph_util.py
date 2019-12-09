@@ -26,7 +26,8 @@ def load_mesh_tri(mesh_path):
             fields = line.strip().split()
             try:
                 if fields[0] == 'f':
-                    mesh_tri.append([int(f.split('/')[0]) - 1 for f in fields[1:]])
+                    mesh_tri.append(
+                        [int(f.split('/')[0]) - 1 for f in fields[1:]])
             except:
                 pass
     mesh_tri = np.array(mesh_tri)
@@ -117,12 +118,12 @@ def sparse_python_to_torch(sp_python):
 
 
 def perm_index_reverse(indices):
-  indices_reverse = np.copy(indices)
+    indices_reverse = np.copy(indices)
 
-  for i, j in enumerate(indices):
-    indices_reverse[j] = i
+    for i, j in enumerate(indices):
+        indices_reverse[j] = i
 
-  return indices_reverse
+    return indices_reverse
 
 
 def build_hand_graph(graph_template_path, output_dir):
@@ -134,7 +135,8 @@ def build_hand_graph(graph_template_path, output_dir):
     hand_tri = load_mesh_tri(graph_template_path)
     arm_index_range = [473, 529]
     if len(arm_index_range) > 1 and arm_index_range[1] > arm_index_range[0]:
-        hand_tri = hand_mesh_tri(hand_tri, arm_index_range[0], arm_index_range[1])
+        hand_tri = hand_mesh_tri(
+            hand_tri, arm_index_range[0], arm_index_range[1])
 
     graph_dict_path = osp.join(output_dir, 'graph_dict.npy')
     coarsening_levels = 4
@@ -143,7 +145,8 @@ def build_hand_graph(graph_template_path, output_dir):
         # Build graph
         hand_mesh_adj = build_graph(hand_tri, hand_tri.max() + 1)
         # Compute coarsened graphs
-        graph_Adj, graph_L, graph_perm = coarsen(hand_mesh_adj, coarsening_levels)
+        graph_Adj, graph_L, graph_perm = coarsen(
+            hand_mesh_adj, coarsening_levels)
 
         graph_dict = {'hand_mesh_adj': hand_mesh_adj, 'coarsen_graphs_Adj': graph_Adj,
                       'coarsen_graphs_L': graph_L, 'graph_perm': graph_perm}
@@ -157,9 +160,11 @@ def build_hand_graph(graph_template_path, output_dir):
         graph_perm = graph_dict['graph_perm']
 
     for i, g in enumerate(graph_L):
-        logger.info("Layer {0}: M_{0} = |V| = {1} nodes, |E| = {2} edges".format(i, g.shape[0], graph_Adj[i].nnz // 2))
+        logger.info("Layer {0}: M_{0} = |V| = {1} nodes, |E| = {2} edges".format(
+            i, g.shape[0], graph_Adj[i].nnz // 2))
 
-    graph_mask = torch.from_numpy((np.array(graph_perm) < hand_tri.max() + 1).astype(float)).float()
+    graph_mask = torch.from_numpy(
+        (np.array(graph_perm) < hand_tri.max() + 1).astype(float)).float()
     graph_mask = graph_mask.unsqueeze(-1).expand(-1, 3)  # V x 3
 
     # Compute max eigenvalue of graph Laplacians, rescale Laplacian
@@ -168,7 +173,8 @@ def build_hand_graph(graph_template_path, output_dir):
         graph_lmax.append(lmax_L(graph_L[i]))
         graph_L[i] = rescale_L(graph_L[i], graph_lmax[i])
 
-    logger.info("lmax: " + str([graph_lmax[i] for i in range(coarsening_levels)]))
+    logger.info("lmax: " + str([graph_lmax[i]
+                                for i in range(coarsening_levels)]))
 
     graph_perm_reverse = perm_index_reverse(graph_perm)
 
