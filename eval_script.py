@@ -31,6 +31,9 @@ import math
 def main():
     min_angle = 90
     max_angle = 90
+    first_count = 0
+    first_normal_vector = []
+    normal_vector = []
     image_capture()
     parser = argparse.ArgumentParser(
         description="3D Hand Shape and Pose Inference")
@@ -102,16 +105,21 @@ def main():
                 return np.rad2deg(np.arccos(np.clip(c, -1.0, 1.0)))
 
             for i in range(8):
-                now_angle = (tangent_angle(
-                    est_pose_cam_xyz[i][1] - est_pose_cam_xyz[i][0], [1, 0, 0]) + tangent_angle(
-                    est_pose_cam_xyz[i][5] - est_pose_cam_xyz[i][0], [1, 0, 0]) + tangent_angle(
-                    est_pose_cam_xyz[i][9] - est_pose_cam_xyz[i][0], [1, 0, 0]) + tangent_angle(
-                    est_pose_cam_xyz[i][13] - est_pose_cam_xyz[i][0], [1, 0, 0]) + tangent_angle(
-                    est_pose_cam_xyz[i][17] - est_pose_cam_xyz[i][0], [1, 0, 0]))/5
+
+                if(first_count == 0):
+                    first_normal_vector = np.cross(
+                        est_pose_cam_xyz[i][1] - est_pose_cam_xyz[i][5], est_pose_cam_xyz[i][17] - est_pose_cam_xyz[i][0])
+
+                    first_count += 1
+                normal_vector = np.cross(
+                    est_pose_cam_xyz[i][1] - est_pose_cam_xyz[i][5], est_pose_cam_xyz[i][17] - est_pose_cam_xyz[i][0])
+
+                now_angle = tangent_angle(first_normal_vector, normal_vector)
                 if now_angle < min_angle:
                     min_angle = now_angle
                 if now_angle > max_angle:
                     max_angle = now_angle
+                ##
 
                 print(min_angle, max_angle, len(results_pose_cam_xyz))
 
