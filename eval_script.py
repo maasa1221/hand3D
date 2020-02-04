@@ -11,7 +11,7 @@ from __future__ import unicode_literals
 import argparse
 import os.path as osp
 import torch
-
+import csv
 from hand_shape_pose.config import cfg
 from hand_shape_pose.model.shape_pose_network import ShapePoseNetwork
 from hand_shape_pose.data.build import build_dataset
@@ -26,15 +26,20 @@ import os
 import numpy as np
 from numpy import linalg as LA
 import math
+from scipy.fftpack import fft
+from scipy.fftpack import ifft
+import matplotlib.pyplot as plt
 
 
 def main():
+    count = 1
+    angle_list = []
     min_angle = 90
     max_angle = 90
     first_count = 0
     first_normal_vector = []
     normal_vector = []
-    image_capture()
+    # image_capture()
     parser = argparse.ArgumentParser(
         description="3D Hand Shape and Pose Inference")
     parser.add_argument(
@@ -115,33 +120,52 @@ def main():
                     est_pose_cam_xyz[i][1] - est_pose_cam_xyz[i][5], est_pose_cam_xyz[i][17] - est_pose_cam_xyz[i][0])
 
                 now_angle = tangent_angle(first_normal_vector, normal_vector)
-                if now_angle < min_angle:
-                    min_angle = now_angle
-                if now_angle > max_angle:
-                    max_angle = now_angle
-                ##
+                angle_list.append(now_angle)
+                # if now_angle < min_angle:
+                #     min_angle = now_angle
+                # if now_angle > max_angle:
+                #     max_angle = now_angle
+                # ##
 
-                print(min_angle, max_angle, len(results_pose_cam_xyz))
+                def ffts(array):
+                    yf = np.fft.fft(array)
+                    print(yf)
+                    yf[20:108] = 0
+                    F_ifft = np.fft.ifft(yf)
+                    F_ifft2 = F_ifft.real
+                    fq = np.linspace(0, 128, 128)
+                    print(max(array), min(array))
+                    print(yf)
+                    print(F_ifft2)
+                    plt.plot(fq, F_ifft2)
+                    plt.show()
+                    return print(max(F_ifft2), min(F_ifft2))
 
-        results_pose_cam_xyz.update(
-            {img_id.item(): result for img_id, result in zip(image_ids, est_pose_cam_xyz)})
+        count += 1
+        print(count)
+        if(count == 17):
+            ffts(angle_list)
+            break
 
-        if i % cfg.EVAL.PRINT_FREQ == 0:
-            # 4. evaluate pose estimation
-            avg_est_error = dataset_val.evaluate_pose(
-                results_pose_cam_xyz, save_results=False)  # cm
-            msg = 'Evaluate: [{0}/{1}]\t' 'Average pose estimation error: {2:.2f} (mm)'.format(
-                len(results_pose_cam_xyz), len(dataset_val), avg_est_error * 10.0)
-            logger.info(msg)
+    results_pose_cam_xyz.update(
+        {img_id.item(): result for img_id, result in zip(image_ids, est_pose_cam_xyz)})
 
-            # 5. visualize mesh and pose estimation
-            if cfg.EVAL.SAVE_BATCH_IMAGES_PRED:
-                file_name = '{}_{}.jpg'.format(osp.join(output_dir, 'pred'), i)
-                logger.info("Saving image: {}".format(file_name))
-                save_batch_image_with_mesh_joints(mesh_renderer, images.to(cpu_device), cam_params.to(cpu_device),
-                                                  bboxes.to(
-                                                      cpu_device), est_mesh_cam_xyz, est_pose_uv,
-                                                  est_pose_cam_xyz, file_name)
+    if i % cfg.EVAL.PRINT_FREQ == 0:
+        # 4. evaluate pose estimation
+        avg_est_error = dataset_val.evaluate_pose(
+            results_pose_cam_xyz, save_results=False)  # cm
+        msg = 'Evaluate: [{0}/{1}]\t' 'Average pose estimation error: {2:.2f} (mm)'.format(
+            len(results_pose_cam_xyz), len(dataset_val), avg_est_error * 10.0)
+        logger.info(msg)
+
+        # 5. visualize mesh and pose estimation
+        if cfg.EVAL.SAVE_BATCH_IMAGES_PRED:
+            file_name = '{}_{}.jpg'.format(osp.join(output_dir, 'pred'), i)
+            logger.info("Saving image: {}".format(file_name))
+            save_batch_image_with_mesh_joints(mesh_renderer, images.to(cpu_device), cam_params.to(cpu_device),
+                                              bboxes.to(
+                                                  cpu_device), est_mesh_cam_xyz, est_pose_uv,
+                                              est_pose_cam_xyz, file_name)
 
     # overall evaluate pose estimation
     assert len(results_pose_cam_xyz) == len(dataset_val), \
@@ -155,8 +179,9 @@ def main():
 
 
 def image_capture():
-    cap = cv2.VideoCapture("./videos/video4.mp4")
-    for i in range(240):
+    cap = cv2.VideoCapture("./videos/video1.mp4")
+
+    for i in range(256):
         ret, frame = cap.read()
         # cv2.rectangle(frame,(0,0),(780-258,746-224),(255,255,255),3)
         if frame is None:
@@ -168,8 +193,10 @@ def image_capture():
         count = i
         cv2.imwrite("./data/real_world_testset/images/"+"0" *
                     (5-len(str(count)))+str(count)+".jpg", frame)
+
         k = cv2.waitKey(1)
         if k == ord('q'):
+
             break
     cap.release()
     cv2.destroyAllWindows()
