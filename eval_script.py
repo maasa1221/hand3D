@@ -36,6 +36,7 @@ def main():
     angle_list = []
     min_angle = 90
     max_angle = 90
+    before_angle = 90
     first_count = 0
     first_normal_vector = []
     normal_vector = []
@@ -113,39 +114,44 @@ def main():
 
                 if(first_count == 0):
                     first_normal_vector = np.cross(
-                        est_pose_cam_xyz[i][0] - est_pose_cam_xyz[i][5], est_pose_cam_xyz[i][17] - est_pose_cam_xyz[i][0])
+                        est_pose_cam_xyz[i][1] - est_pose_cam_xyz[i][5], est_pose_cam_xyz[i][17] - est_pose_cam_xyz[i][0])
 
                     first_count += 1
                 normal_vector = np.cross(
-                    est_pose_cam_xyz[i][0] - est_pose_cam_xyz[i][5], est_pose_cam_xyz[i][17] - est_pose_cam_xyz[i][0])
+                    est_pose_cam_xyz[i][1] - est_pose_cam_xyz[i][5], est_pose_cam_xyz[i][17] - est_pose_cam_xyz[i][0])
 
                 now_angle = tangent_angle(first_normal_vector, normal_vector)
-                angle_list.append(now_angle)
+
                 # if now_angle < min_angle:
                 #     min_angle = now_angle
                 # if now_angle > max_angle:
                 #     max_angle = now_angle
                 # ##
+                if((now_angle-before_angle) < 10):
+                    angle_list.append(now_angle)
+                    before_angle = now_angle
+                else:
+                    angle_list.append(now_angle)
+                    before_angle = before_angle
 
-                def ffts(array):
-                    print(array)
-                    yf = np.fft.fft(array)
-                    print(yf)
-                    yf[20:108] = 0
-                    F_ifft = np.fft.ifft(yf)
-                    F_ifft2 = F_ifft.real
-                    fq = np.linspace(0, 128, 128)
-                    print(max(array), min(array))
-                    print(yf)
-                    print(F_ifft2)
-                    plt.plot(fq, F_ifft2)
-                    plt.show()
-                    return print(max(F_ifft2), min(F_ifft2))
+                # def ffts(array):
+                #     yf = np.fft.fft(array)
+                #     print(yf)
+                #     yf[20:108] = 0
+                #     F_ifft = np.fft.ifft(yf)
+                #     F_ifft2 = F_ifft.real
+                #     fq = np.linspace(0, 128, 128)
+                #     print(max(array), min(array))
+                #     print(yf)
+                #     print(F_ifft2)
+                #     plt.plot(fq, F_ifft2)
+                #     plt.show()
+                #     return print(max(F_ifft2), min(F_ifft2))
 
         count += 1
         print(count)
         if(count == 17):
-            ffts(angle_list)
+            print(max(np.array(angle_list)), min(np.array(angle_list)))
             break
 
     results_pose_cam_xyz.update(
@@ -180,7 +186,7 @@ def main():
 
 
 def image_capture():
-    cap = cv2.VideoCapture("./videos/video4.mp4")
+    cap = cv2.VideoCapture("./videos/video1.mp4")
 
     for i in range(256):
         ret, frame = cap.read()
