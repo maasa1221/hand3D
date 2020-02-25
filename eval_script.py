@@ -39,7 +39,7 @@ def main():
     first_count = 0
     first_normal_vector = []
     normal_vector = []
-    # image_capture()
+    image_capture()
     parser = argparse.ArgumentParser(
         description="3D Hand Shape and Pose Inference")
     parser.add_argument(
@@ -113,11 +113,11 @@ def main():
 
                 if(first_count == 0):
                     first_normal_vector = np.cross(
-                        est_pose_cam_xyz[i][1] - est_pose_cam_xyz[i][5], est_pose_cam_xyz[i][17] - est_pose_cam_xyz[i][0])
+                        est_pose_cam_xyz[i][0] - est_pose_cam_xyz[i][5], est_pose_cam_xyz[i][17] - est_pose_cam_xyz[i][0])
 
                     first_count += 1
                 normal_vector = np.cross(
-                    est_pose_cam_xyz[i][1] - est_pose_cam_xyz[i][5], est_pose_cam_xyz[i][17] - est_pose_cam_xyz[i][0])
+                    est_pose_cam_xyz[i][0] - est_pose_cam_xyz[i][5], est_pose_cam_xyz[i][17] - est_pose_cam_xyz[i][0])
 
                 now_angle = tangent_angle(first_normal_vector, normal_vector)
                 angle_list.append(now_angle)
@@ -128,6 +128,7 @@ def main():
                 # ##
 
                 def ffts(array):
+                    print(array)
                     yf = np.fft.fft(array)
                     print(yf)
                     yf[20:108] = 0
@@ -179,7 +180,7 @@ def main():
 
 
 def image_capture():
-    cap = cv2.VideoCapture("./videos/video1.mp4")
+    cap = cv2.VideoCapture("./videos/video4.mp4")
 
     for i in range(256):
         ret, frame = cap.read()
