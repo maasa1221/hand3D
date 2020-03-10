@@ -34,12 +34,13 @@ import matplotlib.pyplot as plt
 def main():
     count = 1
     angle_list = []
+    result = []
     min_angle = 90
     max_angle = 90
     first_count = 0
     first_normal_vector = []
     normal_vector = []
-    image_capture()
+    # image_capture()
     parser = argparse.ArgumentParser(
         description="3D Hand Shape and Pose Inference")
     parser.add_argument(
@@ -127,25 +128,37 @@ def main():
                 #     max_angle = now_angle
                 # ##
 
-                def ffts(array):
+                # def median_filter(array):
+                #     print(array)
+                #     yf = np.fft.fft(array)
+                #     print(yf)
+                #     yf[20:108] = 0
+                #     F_ifft = np.fft.ifft(yf)
+                #     F_ifft2 = F_ifft.real
+                #     fq = np.linspace(0, 128, 128)
+                #     print(max(array), min(array))
+                #     print(yf)
+                #     print(F_ifft2)
+                #     plt.plot(fq, F_ifft2)
+                #     plt.show()
+                #     return print(max(F_ifft2), min(F_ifft2))
+
+                def median_filter(array):
                     print(array)
-                    yf = np.fft.fft(array)
-                    print(yf)
-                    yf[20:108] = 0
-                    F_ifft = np.fft.ifft(yf)
-                    F_ifft2 = F_ifft.real
+                    for i in range(len(array)):
+                        res_array = array[i:i+13]
+                        result_median_filter = np.median(res_array)
+                        result.append(result_median_filter)
                     fq = np.linspace(0, 128, 128)
-                    print(max(array), min(array))
-                    print(yf)
-                    print(F_ifft2)
-                    plt.plot(fq, F_ifft2)
+                    plt.plot(fq, result)
                     plt.show()
-                    return print(max(F_ifft2), min(F_ifft2))
+                    print(result)
+                    return print(max(result), min(result))
 
         count += 1
         print(count)
         if(count == 17):
-            ffts(angle_list)
+            median_filter(angle_list)
             break
 
     results_pose_cam_xyz.update(
