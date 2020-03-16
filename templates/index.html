@@ -1,0 +1,94 @@
+<html>
+  <head>
+    <title>PROJ_CAMERA_ROM Application</title>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/index.css') }}"
+    />
+  </head>
+  <body>
+    <div id="header"><h1>録画＆分析画面</h1></div>
+    <div id="result"><h1>MAX　{{ result[0] }}</h1></div>
+    <div id="result"><h1>MIN　{{ result[1] }}</h1></div>
+    <div id="stream"><img src="{{ url_for('video_feed') }}" /></div>
+    <div id="buttons">
+    <form action="/" method="post" id="leftb">
+      <button id="button1" class="btn-send noroc" name="post_value"  value="post_value">
+        録画
+      </button>
+    </form>
+
+    <form action="/" method="post" id="rightb">
+      <button id="button" class="btn-send eval" name="post_value2" value="from get">
+        分析
+      </button>
+    </form>
+  </div>
+    <script type=text/javascript
+    src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script
+    type="text/javascript"
+    src="{{ url_for('static', filename='js/index.js') }}"
+    ></script>
+    <script>
+    
+      $(window).load(init());
+      function init() {
+        var flag=0;
+        
+        $(document).on("click",".noroc",function() {
+          // var textData = JSON.stringify({"text":$("#input-text").val()});
+          $('body').css('background-color','orange');
+          $(".noroc").addClass('roc');
+          $(".roc").removeClass('noroc');
+          $(".roc").val('000000');
+          $.ajax({
+            type:'POST',
+            // // url:"/",
+            data: {post_value:"roc"}
+          });
+          // flag=1;
+          return false;
+        });
+
+        $(document).on("click",".roc",function() {
+          $('body').css('background-color','rgb(248, 233, 206)');
+          $(".roc").addClass('noroc');
+          $(".noroc").removeClass('roc');
+          $(".noroc").val('0100000');
+          $.ajax({
+            type:'POST',
+          
+            data:  {post_value:"noroc"}
+          });
+          // flag=0;
+          return false;
+
+        });
+        
+        $(document).on("click",".eval",function() {
+          // $('body').css('background-color','white');
+          // $(".roc").addClass('noroc');
+          // $(".noroc").removeClass('roc');
+          // $(".noroc").val('0100000');
+          $.ajax({
+            type:'POST',
+          
+            data:  {post_value:"eval"}
+          });
+          // flag=0;
+          return false;
+
+        });
+        
+      }
+    </script>
+    <!-- <form action="/test" method="get">
+      <button name="get_value" value="from get">get submit</button>
+    </form> -->
+    <!-- jinja2のテンプレートの書き方です。/video_feedを呼び出しています。 -->
+  </body>
+
+  
+</html>
