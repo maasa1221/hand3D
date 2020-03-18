@@ -137,12 +137,11 @@ def test():
             # let = hoge.goodbye()
             # print('post_value')
             global result
-            result = eval_script.main()
+            result = [1, 1]
 
         # res = request.form['post_value']
 
         # let = hoge.goodbye()
-
     return result
 
 

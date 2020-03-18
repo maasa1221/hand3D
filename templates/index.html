@@ -11,7 +11,7 @@
     <div id="header"><h1>録画＆分析画面</h1></div>
     <div id="result"><h1>MAX　{{ result[0] }}</h1></div>
     <div id="result"><h1>MIN　{{ result[1] }}</h1></div>
-    <div id="stream"><img src="{{ url_for('video_feed') }}" /></div>
+    <!-- <div id="stream"><img src="{{ url_for('video_feed') }}" /></div> -->
     <div id="buttons">
     <form action="/" method="post" id="leftb">
       <button id="button1" class="btn-send noroc" name="post_value"  value="post_value">
@@ -20,7 +20,7 @@
     </form>
 
     <form action="/" method="post" id="rightb">
-      <button id="button" class="btn-send eval" name="post_value2" value="from get">
+      <button id="button" class="btn-send eval" name="post_value" value="eval">
         分析
       </button>
     </form>
@@ -67,20 +67,20 @@
 
         });
         
-        $(document).on("click",".eval",function() {
-          // $('body').css('background-color','white');
-          // $(".roc").addClass('noroc');
-          // $(".noroc").removeClass('roc');
-          // $(".noroc").val('0100000');
-          $.ajax({
-            type:'POST',
+        // $(document).on("click",".eval",function() {
+        //   // $('body').css('background-color','white');
+        //   // $(".roc").addClass('noroc');
+        //   // $(".noroc").removeClass('roc');
+        //   // $(".noroc").val('0100000');
+        //   $.ajax({
+        //     type:'POST',
           
-            data:  {post_value:"eval"}
-          });
-          // flag=0;
-          return false;
+        //     data:  {post_value:"eval"}
+        //   });
+        //   // flag=0;
+        //   return false;
 
-        });
+        // });
         
       }
     </script>
