@@ -75,6 +75,9 @@ import hoge
 from flask import Flask, render_template, Response, request
 import os
 from camera import VideoCamera
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
 
 app = Flask(__name__)
 
@@ -90,6 +93,17 @@ flag = 0
 
 def resultf(num):
     return render_template('index.html', result=num)
+
+
+def spread(result_list):
+    scope = ['https://spreadsheets.google.com/feeds',
+             'https://www.googleapis.com/auth/drive']
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(
+        'hand3d-272022-21ee65463d02.json', scope)
+    gc = gspread.authorize(credentials)
+    wks = gc.open('hand3D_datas').sheet1
+
+    wks.append_row([str(result_list[0]), str(result_list[1])])
 
 
 def test():
@@ -137,7 +151,8 @@ def test():
             # let = hoge.goodbye()
             # print('post_value')
             global result
-            result = [1, 1]
+            result = eval_script.main()
+            spread(result)
 
         # res = request.form['post_value']
 
