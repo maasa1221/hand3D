@@ -59,3 +59,134 @@ button {
   font-size: 1.2rem;
   font-weight: 500;
 }
+
+#modal {
+  z-index: 10000;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  background-color: white;
+  opacity: 0.9;
+}
+
+#modal-flex {
+  display: flex;
+  -webkit-align-items: center; /* 縦方向中央揃え（Safari用） */
+  align-items: center; /* 縦方向中央揃え */
+  -webkit-justify-content: center; /* 横方向中央揃え（Safari用） */
+  justify-content: center;
+}
+
+#modal-grid {
+  position: fixed;
+  top: 50%;
+  margin: auto;
+  margin-top: -50px;
+  margin-left: 2rem;
+  display: grid;
+  grid-template-columns: 20rem 10rem;
+}
+
+#load {
+  display: grid;
+  grid-column: 1/2;
+  z-index: 100001;
+  font-size: 3.5rem;
+  font-weight: 100;
+  color: green;
+}
+
+#load > p {
+  margin: 0;
+}
+
+#circle {
+  display: grid;
+  grid-column: 2/3;
+}
+
+.circle2 {
+  margin: auto;
+  position: fixed;
+  width: 5.2rem;
+  height: 5.2rem;
+  z-index: 100005;
+  border-radius: 50%;
+  top: 49%;
+  margin-top: -50px;
+  border: white solid 1rem;
+}
+.circle {
+  margin: auto;
+  position: fixed;
+  width: 7rem;
+  height: 7rem;
+  background: green;
+  border-radius: 50%;
+  text-align: center;
+  overflow: hidden;
+  z-index: 100004;
+  top: 49%;
+  margin-top: -50px;
+  border: white solid 1px;
+  outline-offset: -5px;
+}
+
+.circle::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: -3.5rem;
+  width: 7rem;
+  height: 7rem;
+  background: white;
+  transform-origin: right 3.5rem;
+  z-index: 100002;
+  animation: rotate-circle-left 5s linear forwards infinite;
+}
+
+.circle::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0px;
+  left: 3.5rem;
+  width: 7rem;
+  height: 7rem;
+  background: rgb(255, 255, 255);
+  transform-origin: left 3.5rem;
+  z-index: 100003;
+  animation: rotate-circle-right 5s linear forwards infinite;
+}
+
+@keyframes rotate-circle-right {
+  0% {
+    transform: rotate(0deg);
+    background: white;
+  }
+  50% {
+    transform: rotate(180deg);
+    background: rgb(255, 255, 255);
+  }
+  50.01% {
+    transform: rotate(360deg);
+    background: green;
+  }
+  100% {
+    transform: rotate(360deg);
+    background: green;
+  }
+}
+
+@keyframes rotate-circle-left {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+}
