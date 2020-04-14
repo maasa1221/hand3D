@@ -13,14 +13,14 @@ class VideoCamera(object):
     def get_frame(self,):
         success, image = self.video.read()
         ret, jpeg = cv2.imencode('.jpg', image)
-        cv2.imwrite("output.jpg", image)
-        return jpeg.tobytes()
+        # cv2.imwrite("output.jpg", image)
+        return jpeg.tobytes(),jpeg.tobytes()
 
-    def get_frame2(self,):
-        success, image = self.video.read()
-        ret, jpeg = cv2.imencode('.jpg', image)
-        cv2.imwrite("output3.jpg", image)
-        return jpeg.tobytes()
+    # def get_frame2(self,):
+    #     success, image = self.video.read()
+    #     ret, jpeg = cv2.imencode('.jpg', image)
+    #     cv2.imwrite("output3.jpg", image)
+    #     return jpeg.tobytes()
 
         # read()は、二つの値を返すので、success, imageの2つ変数で受けています。
         # OpencVはデフォルトでは raw imagesなので JPEGに変換
