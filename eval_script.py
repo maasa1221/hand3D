@@ -29,9 +29,11 @@ import math
 from scipy.fftpack import fft
 from scipy.fftpack import ifft
 import matplotlib.pyplot as plt
+from PIL import Image
+import io
 
 
-def main():
+def main(byte_array):
     count = 1
     angle_list = []
     result = []
@@ -40,7 +42,7 @@ def main():
     first_count = 0
     first_normal_vector = []
     normal_vector = []
-    # image_capture()
+    image_capture(byte_array)
     parser = argparse.ArgumentParser(
         description="3D Hand Shape and Pose Inference")
     parser.add_argument(
@@ -216,6 +218,17 @@ def main():
 #             break
 #     cap.release()
 #     cv2.destroyAllWindows()
+
+def image_capture(image_byte_array):
+    print("capture start")
+    for i in range(0,50):
+        count = i
+        image = Image.open(io.BytesIO(image_byte_array[0])).convert("RGB")
+        image.save("./data/real_world_testset/images/"+"0" *(5-len(str(count)))+str(count)+".jpg")
+        image = cv2.imread("./data/real_world_testset/images/"+"0" *(5-len(str(count)))+str(count)+".jpg")
+        image = image[0:256, 0:256]
+        cv2.imwrite("./data/real_world_testset/images/"+"0" *(5-len(str(count)))+str(count)+".jpg",image)
+    print("capture finish")
 
 
 if __name__ == "__main__":

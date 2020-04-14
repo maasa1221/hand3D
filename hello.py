@@ -1,83 +1,11 @@
-# from flask import Flask
-# app = Flask(__name__)
-
-
-# @app.route('/')
-# def hello():
-#     name = "Hello World"
-#     return name
-
-
-# @app.route('/good')
-# def good():
-#     name = "Good"
-#     return name
-
-
-# if __name__ == "__main__":
-#     app.run(debug=True)
 import eval_script
 import hoge
-# from flask import Flask, render_template, request
 import cv2                        
-# app = Flask(__name__)
-
-
-def image_capture():
-    cap = cv2.VideoCapture(0)
-
-    # Define the codec and create VideoWriter object
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('output.mov', fourcc, 20.0, (640, 480))
-
-    while(cap.isOpened()):
-
-        ret, frame = cap.read()
-        if ret == True:
-            frame = cv2.flip(frame, 0)
-            # write the flipped frame
-            out.write(frame)
-            cv2.imshow('frame', frame)
-
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-        else:
-            break
-
-    # Release everything if job is finished
-    cap.release()
-    out.release()
-    cv2.destroyAllWindows()
-
-
-# @app.route("/")
-# def index():
-#     return render_template('index.html')
-
-
-# @app.route("/test", methods=['GET', 'POST'])
-# def test():
-#     if request.method == 'GET':
-#         res = request.args.get('get_value')
-#         image_capture()
-#         let = hoge.goodbye()
-
-#     elif request.method == 'POST':
-#         res = request.form['post_value']
-#         let = hoge.goodbye()
-
-#     return res
-
-
-# if __name__ == "__main__":
-#     app.run()
-
 from flask import Flask, render_template, Response, request
 import os
 from camera import VideoCamera
 import gspread
-from PIL import Image
-import io
+
 
 
 app = Flask(__name__)
@@ -162,8 +90,10 @@ def test():
             # image_capture()
             # let = hoge.goodbye()
             # print('post_value')
+            print("evaluation start")
             global result
-            result = eval_script.main()
+            result = eval_script.main(frame_list)
+            print("evaluation finish")
             spread(result)
 
         # res = request.form['post_value']
@@ -171,17 +101,7 @@ def test():
         # let = hoge.goodbye()
     
     while(flag==1):
-        # os.rename("output.jpg", "output"+str(roc_frame_count+2)+".jpg")
-        # frame = cv2.imread(img)
-        # cropped_frame = img[20:360, 0:640]
-        # cropped_frame = cv2.flip(cropped_frame,0)
-        # # roc_frame_count+=1
-        # out.write(cropped_frame)
-        # out.release()
-
         frame_list.append(img)
-        image = Image.open(io.BytesIO(frame_list[0])).convert("RGB")
-        image.save('output3.jpg')
     return result
 
 
