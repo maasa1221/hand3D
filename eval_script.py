@@ -166,7 +166,7 @@ def main(byte_array):
 
         count += 1
         print(count)
-        if(count == 20):
+        if(count == 3):
             result = median_filter(angle_list)
 
             return result
@@ -203,28 +203,7 @@ def main(byte_array):
         avg_est_error * 10.0))
 
 
-# def image_capture():
-#     cap = cv2.VideoCapture("./videos/video4.mp4")
 
-#     for i in range(256):
-#         ret, frame = cap.read()
-#         # cv2.rectangle(frame,(0,0),(780-258,746-224),(255,255,255),3)
-#         if frame is None:
-#             break
-#         cv2.imshow("Show FLAME Image", frame)
-#         frame = frame[0:1024, 400:1424]
-#         frame = cv2.resize(
-#             frame, (int(frame.shape[1]/4), int(frame.shape[0]/4)))
-#         count = i
-#         cv2.imwrite("./data/real_world_testset/images/"+"0" *
-#                     (5-len(str(count)))+str(count)+".jpg", frame)
-
-#         k = cv2.waitKey(1)
-#         if k == ord('q'):
-
-#             break
-#     cap.release()
-#     cv2.destroyAllWindows()
 
 def image_capture(image_byte_array):
     print("capture start")

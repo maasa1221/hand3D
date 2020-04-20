@@ -8,11 +8,10 @@
     />
   </head>
   <body>
-    <!-- <div id="modal">
+    <div id="modal" style="z-index: -100; opacity: 0; background-color:white;">
       <div id="modal-flex">
         <div id="modal-grid">
           <div id="load"><p>Analyzing...</p></div>
-          
           <div id="circle">
             <div class="circle2"></div>
             <div class="circle">
@@ -20,9 +19,10 @@
               <div class="circle-inner"></div>
             </div>
           </div>
-        </div> -->
-      <!-- </div> -->
-    <!-- </div>  -->
+        </div> 
+      </div>
+    </div>
+    
     <div id="header"><h1>録画＆分析画面</h1></div>
     <div id="result"><h1>MAX　{{ result[0] }}</h1></div>
     <div id="result"><h1>MIN　{{ result[1] }}</h1></div>
@@ -40,6 +40,9 @@
       </button>
     </form>
   </div>
+
+  
+
     <script type=text/javascript
     src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script
@@ -60,10 +63,8 @@
           $(".roc").val('000000');
           $.ajax({
             type:'POST',
-            // // url:"/",
             data: {post_value:"roc"}
           });
-          // flag=1;
           return false;
         });
 
@@ -74,28 +75,17 @@
           $(".noroc").val('0100000');
           $.ajax({
             type:'POST',
-          
             data:  {post_value:"noroc"}
           });
-          // flag=0;
           return false;
 
         });
         
-        // $(document).on("click",".eval",function() {
-        //   // $('body').css('background-color','white');
-        //   // $(".roc").addClass('noroc');
-        //   // $(".noroc").removeClass('roc');
-        //   // $(".noroc").val('0100000');
-        //   $.ajax({
-        //     type:'POST',
-          
-        //     data:  {post_value:"eval"}
-        //   });
-        //   // flag=0;
-        //   return false;
-
-        // });
+        $(document).on("click",".eval",function() {
+          $('#modal').css('opacity','0.9');
+          $('#modal').css('z-index','100000');
+          $('#modal').css('background-color','white');
+        });
         
       }
     </script>
