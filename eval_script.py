@@ -103,6 +103,12 @@ def main(byte_array):
             est_mesh_cam_xyz = [o.to(cpu_device) for o in est_mesh_cam_xyz]
             est_pose_uv = [o.to(cpu_device) for o in est_pose_uv]
             est_pose_cam_xyz = [o.to(cpu_device) for o in est_pose_cam_xyz]
+            file_name = '{}_{}.jpg'.format(osp.join(output_dir, 'pred'), i)
+            logger.info("Saving image: {}".format(file_name))
+            save_batch_image_with_mesh_joints(mesh_renderer, images.to(cpu_device), cam_params.to(cpu_device),
+                                              bboxes.to(
+                                                  cpu_device), est_mesh_cam_xyz, est_pose_uv,
+                                              est_pose_cam_xyz, file_name)
 
             print(len(est_pose_cam_xyz))
 
@@ -151,19 +157,20 @@ def main(byte_array):
                         res_array = array[i:i+13]
                         result_median_filter = np.median(res_array)
                         result.append(result_median_filter)
-                    fq = np.linspace(0, 128, 128)
-                    plt.plot(fq, result)
-                    plt.show()
+                    # fq = np.linspace(0, 128, 128)
+                    # plt.plot(fq, result)
+                    # plt.show()
                     print(result)
                     # return print(max(result), min(result))
                     return [max(result), min(result)]
 
         count += 1
         print(count)
-        if(count == 17):
+        if(count == 20):
             result = median_filter(angle_list)
+
             return result
-            break
+            
 
     results_pose_cam_xyz.update(
         {img_id.item(): result for img_id, result in zip(image_ids, est_pose_cam_xyz)})

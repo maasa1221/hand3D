@@ -4,7 +4,7 @@ import cv2
 from flask import Flask, render_template, Response, request
 import os
 from camera import VideoCamera
-import gspread
+# import gspread
 
 
 
@@ -27,15 +27,15 @@ def resultf(num):
     return render_template('index.html', result=num)
 
 
-def spread(result_list):
-    scope = ['https://spreadsheets.google.com/feeds',
-             'https://www.googleapis.com/auth/drive']
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(
-        'hand3d-272022-21ee65463d02.json', scope)
-    gc = gspread.authorize(credentials)
-    wks = gc.open('hand3D_datas').sheet1
+# def spread(result_list):
+#     scope = ['https://spreadsheets.google.com/feeds',
+#              'https://www.googleapis.com/auth/drive']
+#     credentials = ServiceAccountCredentials.from_json_keyfile_name(
+#         'hand3d-272022-21ee65463d02.json', scope)
+#     gc = gspread.authorize(credentials)
+#     wks = gc.open('hand3D_datas').sheet1
 
-    wks.append_row([str(result_list[0]), str(result_list[1])])
+#     wks.append_row([str(result_list[0]), str(result_list[1])])
 
 
 def test():
@@ -94,7 +94,7 @@ def test():
             global result
             result = eval_script.main(frame_list)
             print("evaluation finish")
-            spread(result)
+            # spread(result)
 
         # res = request.form['post_value']
 
