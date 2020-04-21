@@ -54,14 +54,14 @@ p {
   width: 100%;
 }
 #frame5 {
-  width: -webkit-calc(256px * 1.4);
-  height: -webkit-calc(250px * 1.4);
+  width: -webkit-calc(256px * 1.25);
+  height: -webkit-calc(250px * 1.25);
   border: 4px solid rgb(0, 68, 0);
   box-sizing: border-box;
   position: absolute;
   z-index: 100;
-  left: -webkit-calc(50% - 128px * 1.4);
-  top: -webkit-calc(54.3% - 128px * 1.4);
+  left: -webkit-calc(50% - 128px * 1.25);
+  top: -webkit-calc(54.3% - 128px * 1.25);
 }
 
 #stream {
@@ -111,7 +111,7 @@ button {
   z-index: 10000;
   height: 100%;
   width: 100%;
-  position: absolute;
+  position: flex;
   background-color: white;
   opacity: 0.9;
 }

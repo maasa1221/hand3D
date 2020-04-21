@@ -217,8 +217,8 @@ def image_capture(image_byte_array):
         image = cv2.imread("./data/real_world_testset/images/"+"0" *(5-len(str(count)))+str(count)+".jpg")
         print(image.shape[0])
         print(image.shape[1])
-        image = image[104:616, 384:896]
-        image = cv2.resize(image, (int(image.shape[1]/2), int(image.shape[0]/2)))
+        image = image[40:680, 320:960]
+        image = cv2.resize(image, (int(image.shape[1]/2.5), int(image.shape[0]/2.5)))
         cv2.imwrite("./data/real_world_testset/images/"+"0" *(5-len(str(count)))+str(count)+".jpg",image)
     print("capture finish")
     return counter
