@@ -153,7 +153,8 @@ def build_hand_graph(graph_template_path, output_dir):
         np.save(graph_dict_path, graph_dict)
     else:
         logger.info("Load saved graph from {}.".format(graph_dict_path))
-        graph_dict = np.load(graph_dict_path).item()
+        graph_dict = np.load(graph_dict_path,
+                             encoding="latin1").item()
         hand_mesh_adj = graph_dict['hand_mesh_adj']
         graph_Adj = graph_dict['coarsen_graphs_Adj']
         graph_L = graph_dict['coarsen_graphs_L']

@@ -29,17 +29,20 @@ import math
 from scipy.fftpack import fft
 from scipy.fftpack import ifft
 import matplotlib.pyplot as plt
+from PIL import Image
+import io
 
 
-def main():
-    count = 1
+def main(byte_array):
+    count = 0
     angle_list = []
+    result = []
     min_angle = 90
     max_angle = 90
     first_count = 0
     first_normal_vector = []
     normal_vector = []
-    image_capture()
+    cap_cnt=image_capture(byte_array)
     parser = argparse.ArgumentParser(
         description="3D Hand Shape and Pose Inference")
     parser.add_argument(
@@ -100,6 +103,12 @@ def main():
             est_mesh_cam_xyz = [o.to(cpu_device) for o in est_mesh_cam_xyz]
             est_pose_uv = [o.to(cpu_device) for o in est_pose_uv]
             est_pose_cam_xyz = [o.to(cpu_device) for o in est_pose_cam_xyz]
+            file_name = '{}_{}.jpg'.format(osp.join(output_dir, 'pred'), i)
+            logger.info("Saving image: {}".format(file_name))
+            save_batch_image_with_mesh_joints(mesh_renderer, images.to(cpu_device), cam_params.to(cpu_device),
+                                              bboxes.to(
+                                                  cpu_device), est_mesh_cam_xyz, est_pose_uv,
+                                              est_pose_cam_xyz, file_name)
 
             print(len(est_pose_cam_xyz))
 
@@ -127,26 +136,41 @@ def main():
                 #     max_angle = now_angle
                 # ##
 
-                def ffts(array):
-                    print(array)
-                    yf = np.fft.fft(array)
-                    print(yf)
-                    yf[20:108] = 0
-                    F_ifft = np.fft.ifft(yf)
-                    F_ifft2 = F_ifft.real
-                    fq = np.linspace(0, 128, 128)
-                    print(max(array), min(array))
-                    print(yf)
-                    print(F_ifft2)
-                    plt.plot(fq, F_ifft2)
-                    plt.show()
-                    return print(max(F_ifft2), min(F_ifft2))
+                # def median_filter(array):
+                #     print(array)
+                #     yf = np.fft.fft(array)
+                #     print(yf)
+                #     yf[20:108] = 0
+                #     F_ifft = np.fft.ifft(yf)
+                #     F_ifft2 = F_ifft.real
+                #     fq = np.linspace(0, 128, 128)
+                #     print(max(array), min(array))
+                #     print(yf)
+                #     print(F_ifft2)
+                #     plt.plot(fq, F_ifft2)
+                #     plt.show()
+                #     return print(max(F_ifft2), min(F_ifft2))
 
-        count += 1
+                def median_filter(array):
+                    print(array)
+                    for i in range(len(array)):
+                        res_array = array[i:i+13]
+                        result_median_filter = np.median(res_array)
+                        result.append(result_median_filter)
+                    # fq = np.linspace(0, 128, 128)
+                    # plt.plot(fq, result)
+                    # plt.show()
+                    print(result)
+                    # return print(max(result), min(result))
+                    return [max(result), min(result)]
+        if(count == int(cap_cnt/8)):
+            result = median_filter(angle_list)
+            return result
         print(count)
-        if(count == 17):
-            ffts(angle_list)
-            break
+        count += 1
+       
+        
+            
 
     results_pose_cam_xyz.update(
         {img_id.item(): result for img_id, result in zip(image_ids, est_pose_cam_xyz)})
@@ -179,28 +203,25 @@ def main():
         avg_est_error * 10.0))
 
 
-def image_capture():
-    cap = cv2.VideoCapture("./videos/video4.mp4")
 
-    for i in range(256):
-        ret, frame = cap.read()
-        # cv2.rectangle(frame,(0,0),(780-258,746-224),(255,255,255),3)
-        if frame is None:
-            break
-        cv2.imshow("Show FLAME Image", frame)
-        frame = frame[0:1024, 400:1424]
-        frame = cv2.resize(
-            frame, (int(frame.shape[1]/4), int(frame.shape[0]/4)))
-        count = i
-        cv2.imwrite("./data/real_world_testset/images/"+"0" *
-                    (5-len(str(count)))+str(count)+".jpg", frame)
 
-        k = cv2.waitKey(1)
-        if k == ord('q'):
-
-            break
-    cap.release()
-    cv2.destroyAllWindows()
+def image_capture(image_byte_array):
+    print("capture start")
+    print(len(image_byte_array))
+    counter=0
+    for i in range(0,len(image_byte_array),1000000):
+        counter+=1
+        count = int(i/1000000)
+        image = Image.open(io.BytesIO(image_byte_array[i])).convert("RGB")
+        image.save("./data/real_world_testset/images/"+"0" *(5-len(str(count)))+str(count)+".jpg")
+        image = cv2.imread("./data/real_world_testset/images/"+"0" *(5-len(str(count)))+str(count)+".jpg")
+        print(image.shape[0])
+        print(image.shape[1])
+        image = image[40:680, 320:960]
+        image = cv2.resize(image, (int(image.shape[1]/2.5), int(image.shape[0]/2.5)))
+        cv2.imwrite("./data/real_world_testset/images/"+"0" *(5-len(str(count)))+str(count)+".jpg",image)
+    print("capture finish")
+    return counter
 
 
 if __name__ == "__main__":

@@ -1,0 +1,239 @@
+body {
+  background-color: rgb(248, 233, 206);
+  font-size: 1rem;
+  color: white;
+  width: 100%;
+  margin: 0;
+}
+
+img {
+  width: 40rem;
+  /* width: 250%; */
+  margin: auto;
+  justify-self: center;
+}
+
+#result {
+  padding-left: 1rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.5rem;
+  color: rgb(0, 68, 0);
+}
+
+#result2 {
+  padding-left: 1rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  color: rgb(0, 68, 0);
+}
+#result2 {
+  padding-left: 1rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  color: rgb(0, 68, 0);
+}
+
+h1 {
+  margin: 0;
+}
+
+p {
+  margin: 0;
+  color: rgb(0, 68, 0);
+  font-size: 1.5rem;
+}
+
+#result_label {
+  padding-left: 1rem;
+  background-color: rgb(0, 68, 0);
+  color: rgb(248, 233, 206);
+}
+
+#results {
+  width: 100%;
+}
+#frame5 {
+  width: -webkit-calc(256px * 1.25);
+  height: -webkit-calc(250px * 1.25);
+  border: 4px solid rgb(0, 68, 0);
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 100;
+  left: -webkit-calc(50% - 128px * 1.25);
+  top: -webkit-calc(54.3% - 128px * 1.25);
+}
+
+#stream {
+  width: 40rem;
+  /* height: 30rem; */
+  /* overflow: hidden; */
+  margin: auto;
+  margin-top: 0.5rem;
+}
+
+#buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+#leftb {
+  display: grid;
+  grid-column: 1/2;
+  justify-self: center;
+}
+
+#rightb {
+  display: grid;
+  grid-column: 2/3;
+  justify-self: center;
+}
+
+#header {
+  background-color: rgb(0, 68, 0);
+  height: 3rem;
+  padding-left: 1rem;
+}
+
+button {
+  background-color: rgb(0, 68, 0);
+  width: 8rem;
+  height: 3rem;
+  color: white;
+  border-radius: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+#modal {
+  z-index: 10000;
+  height: 100%;
+  width: 100%;
+  position: flex;
+  background-color: white;
+  opacity: 0.9;
+}
+
+#modal-flex {
+  display: flex;
+  -webkit-align-items: center; /* 縦方向中央揃え（Safari用） */
+  align-items: center; /* 縦方向中央揃え */
+  -webkit-justify-content: center; /* 横方向中央揃え（Safari用） */
+  justify-content: center;
+}
+
+#modal-grid {
+  position: fixed;
+  top: 50%;
+  margin: auto;
+  margin-top: -50px;
+  margin-left: 2rem;
+  display: grid;
+  grid-template-columns: 20rem 10rem;
+}
+
+#load {
+  display: grid;
+  grid-column: 1/2;
+  z-index: 100001;
+  font-size: 3.5rem;
+  font-weight: 100;
+  color: green;
+}
+
+#load > p {
+  margin: 0;
+}
+
+#circle {
+  display: grid;
+  grid-column: 2/3;
+}
+
+.circle2 {
+  margin: auto;
+  position: fixed;
+  width: 5.2rem;
+  height: 5.2rem;
+  z-index: 100005;
+  border-radius: 50%;
+  top: 49%;
+  margin-top: -50px;
+  border: white solid 1rem;
+}
+.circle {
+  margin: auto;
+  position: fixed;
+  width: 7rem;
+  height: 7rem;
+  background: green;
+  border-radius: 50%;
+  text-align: center;
+  overflow: hidden;
+  z-index: 100004;
+  top: 49%;
+  margin-top: -50px;
+  border: white solid 1px;
+  outline-offset: -5px;
+}
+
+.circle::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: -3.5rem;
+  width: 7rem;
+  height: 7rem;
+  background: white;
+  transform-origin: right 3.5rem;
+  z-index: 100002;
+  animation: rotate-circle-left 5s linear forwards infinite;
+}
+
+.circle::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0px;
+  left: 3.5rem;
+  width: 7rem;
+  height: 7rem;
+  background: rgb(255, 255, 255);
+  transform-origin: left 3.5rem;
+  z-index: 100003;
+  animation: rotate-circle-right 5s linear forwards infinite;
+}
+
+@keyframes rotate-circle-right {
+  0% {
+    transform: rotate(0deg);
+    background: white;
+  }
+  50% {
+    transform: rotate(180deg);
+    background: rgb(255, 255, 255);
+  }
+  50.01% {
+    transform: rotate(360deg);
+    background: green;
+  }
+  100% {
+    transform: rotate(360deg);
+    background: green;
+  }
+}
+
+@keyframes rotate-circle-left {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+}
