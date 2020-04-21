@@ -14,22 +14,68 @@ img {
 }
 
 #result {
+  padding-left: 1rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.5rem;
   color: rgb(0, 68, 0);
-  margin-left: 40rem;
 }
+
+#result2 {
+  padding-left: 1rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  color: rgb(0, 68, 0);
+}
+#result2 {
+  padding-left: 1rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  color: rgb(0, 68, 0);
+}
+
+h1 {
+  margin: 0;
+}
+
+p {
+  margin: 0;
+  color: rgb(0, 68, 0);
+  font-size: 1.5rem;
+}
+
+#result_label {
+  padding-left: 1rem;
+  background-color: rgb(0, 68, 0);
+  color: rgb(248, 233, 206);
+}
+
+#results {
+  width: 100%;
+}
+#frame5 {
+  width: -webkit-calc(256px * 1.4);
+  height: -webkit-calc(250px * 1.4);
+  border: 4px solid rgb(0, 68, 0);
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 100;
+  left: -webkit-calc(50% - 128px * 1.4);
+  top: -webkit-calc(54.3% - 128px * 1.4);
+}
+
 #stream {
   width: 40rem;
   /* height: 30rem; */
   /* overflow: hidden; */
   margin: auto;
-  margin-top: 3rem;
+  margin-top: 0.5rem;
 }
 
 #buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
   width: 100%;
-  margin-left: 9.5rem;
   margin-top: 2rem;
 }
 
@@ -42,6 +88,7 @@ img {
 #rightb {
   display: grid;
   grid-column: 2/3;
+  justify-self: center;
 }
 
 #header {
@@ -64,7 +111,7 @@ button {
   z-index: 10000;
   height: 100%;
   width: 100%;
-  position: fixed;
+  position: absolute;
   background-color: white;
   opacity: 0.9;
 }

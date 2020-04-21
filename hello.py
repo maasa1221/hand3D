@@ -99,7 +99,6 @@ def test():
         # res = request.form['post_value']
 
         # let = hoge.goodbye()
-    
     while(flag==1):
         frame_list.append(img)
     return result

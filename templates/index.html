@@ -24,9 +24,16 @@
     </div>
     
     <div id="header"><h1>録画＆分析画面</h1></div>
-    <div id="result"><h1>MAX　{{ result[0] }}</h1></div>
-    <div id="result"><h1>MIN　{{ result[1] }}</h1></div>
-    <div id="stream"><img src="{{ url_for('video_feed') }}" /></div>
+    <div　id="results">
+       <div id="result"><h1>MAX</h1><h1>　{{ result[0] }}</h1></div>
+    <div id="result2"><h1 style="letter-spacing: 0.5rem;">MIN</h1><h1>　{{ result[1] }}</h1></div>
+    <div id="result3"><h1 id="result_label">RESULT　{{ result[0]-result[1] }}</h1></div>
+    </div>
+    <div style="text-align: center; margin-top: 0.5rem;"><p>緑の四角の中で手を動かしてください</p></div>
+   <div id="stream">
+      <div id="frame5"></div>
+      <img src="{{ url_for('video_feed') }}" />
+    </div>
     <div id="buttons">
     <form action="/" method="post" id="leftb">
       <button id="button1" class="btn-send noroc" name="post_value"  value="post_value">
@@ -83,7 +90,7 @@
         
         $(document).on("click",".eval",function() {
           $('#modal').css('opacity','0.9');
-          $('#modal').css('z-index','100000');
+          $('#modal').css('z-index','10000');
           $('#modal').css('background-color','white');
         });
         

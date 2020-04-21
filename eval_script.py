@@ -34,7 +34,7 @@ import io
 
 
 def main(byte_array):
-    count = 1
+    count = 0
     angle_list = []
     result = []
     min_angle = 90
@@ -42,7 +42,7 @@ def main(byte_array):
     first_count = 0
     first_normal_vector = []
     normal_vector = []
-    image_capture(byte_array)
+    cap_cnt=image_capture(byte_array)
     parser = argparse.ArgumentParser(
         description="3D Hand Shape and Pose Inference")
     parser.add_argument(
@@ -163,13 +163,13 @@ def main(byte_array):
                     print(result)
                     # return print(max(result), min(result))
                     return [max(result), min(result)]
-
-        count += 1
-        print(count)
-        if(count == 3):
+        if(count == int(cap_cnt/8)):
             result = median_filter(angle_list)
-
             return result
+        print(count)
+        count += 1
+       
+        
             
 
     results_pose_cam_xyz.update(
@@ -207,14 +207,21 @@ def main(byte_array):
 
 def image_capture(image_byte_array):
     print("capture start")
-    for i in range(0,50):
-        count = i
-        image = Image.open(io.BytesIO(image_byte_array[0])).convert("RGB")
+    print(len(image_byte_array))
+    counter=0
+    for i in range(0,len(image_byte_array),1000000):
+        counter+=1
+        count = int(i/1000000)
+        image = Image.open(io.BytesIO(image_byte_array[i])).convert("RGB")
         image.save("./data/real_world_testset/images/"+"0" *(5-len(str(count)))+str(count)+".jpg")
         image = cv2.imread("./data/real_world_testset/images/"+"0" *(5-len(str(count)))+str(count)+".jpg")
-        image = image[0:256, 0:256]
+        print(image.shape[0])
+        print(image.shape[1])
+        image = image[104:616, 384:896]
+        image = cv2.resize(image, (int(image.shape[1]/2), int(image.shape[0]/2)))
         cv2.imwrite("./data/real_world_testset/images/"+"0" *(5-len(str(count)))+str(count)+".jpg",image)
     print("capture finish")
+    return counter
 
 
 if __name__ == "__main__":
