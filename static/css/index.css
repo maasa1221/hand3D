@@ -111,7 +111,7 @@ button {
   z-index: 10000;
   height: 100%;
   width: 100%;
-  position: flex;
+  position: fixed;
   background-color: white;
   opacity: 0.9;
 }
@@ -138,13 +138,14 @@ button {
   display: grid;
   grid-column: 1/2;
   z-index: 100001;
-  font-size: 3.5rem;
+  font-size: 20rem;
   font-weight: 100;
   color: green;
 }
 
 #load > p {
   margin: 0;
+  font-size: 3rem;
 }
 
 #circle {
